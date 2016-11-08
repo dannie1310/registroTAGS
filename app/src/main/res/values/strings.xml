@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">RegistroTAG</string>
+    <string name="prompt_usuario">Usuario</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_iniciar_sesion">Iniciar Sesion</string>
+    <string name="error_field_required">Éste campo es requerido</string>
+    <string name="title_conftag_list">TAG Configucación</string>
+    <string name="error_login">Hubo un error al iniciar sesión, por favor intente nuevamente</string>
+    <string name="error_internet">Por favor habilite su conexión a Internet para poder iniciar sesión</string>
+    <string name="URL">http://sca.grupohi.mx/android20151106.php</string>
+    <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
+    <string name="title_activity_main">Registrar TAG</string>
+    <string name="title_login_activity">Iniciar Sesión</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- Tags -->
+    <string name="error_tag_configurado">El TAG que intentas configurar ya ha sido configurado</string>
+    <string name="error_tag_inexistente">El TAG que intentas configurar no está autorizado para éste proyecto</string>
+    <string name="error_tag_comunicacion">¡Error! No se puede establecer la comunicación con el TAG, por favor mantenga el TAG cerca del dispositivo</string>
+    <string name="error_update_tag">¡Error! Hubo un problema al registrar los cambios en la base de datos</string>
+    <string name="error_tag_capacidad_almacenamiento">¡Error! La información excede la capacidad de almacenamiento</string>
+    <string name="tag_configurado">TAG configurado correctamente</string>
+    <string name="origen_configurado">Origen escrito correctamente en el TAG</string>
+    <string name="error_leer_TAG" >Error al leer el TAG. Intente de nuevo.</string>
+    <string name="error_conexion_tag">Error de conexion</string>
+    <string name="error_no_nfc">Su dispositivo no posee lector NFC. No se puede ejecutar esta aplicación.</string>
+    <string name="text_warning_nfc_is_off">¡NFC Está apagado!</string>
+    <string name="text_turn_on_nfc">La aplicación no funciona si el adaptador NFC está apagado. Por favor encienda el adaptador NFC en la configuración del dispositivo.</string>
+    <string name="text_update_settings">Encender Ahora</string>
+
+</resources>
