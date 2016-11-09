@@ -24,7 +24,6 @@ class TagModel {
     private static DBScaSqlite db_sca;
     String uid;
     String idproyecto;
-    String usuario;
 
 
     public String UID;
@@ -57,7 +56,6 @@ class TagModel {
         data.clear();
         data.put("uid", UID);
         data.put("idproyecto",proyecto);
-        data.put("usuario", nombre);
 
         db = db_sca.getWritableDatabase();
         System.out.println("datos: " + data);
@@ -97,8 +95,7 @@ class TagModel {
                     this.UID = c.getString(c.getColumnIndex("uid"));
                     uid = c.getString(c.getColumnIndex("uid"));
                     idproyecto = c.getString(c.getColumnIndex("idproyecto"));
-                    usuario = c.getString(c.getColumnIndex("usuario"));
-                    System.out.println("SELECT: " + uid + " " + idproyecto + " " +  usuario);
+                    System.out.println("SELECT: " + uid + " " + idproyecto);
                 }
             }
             return this;
@@ -115,7 +112,6 @@ class TagModel {
             if (c != null && c.moveToFirst()) {
                 this.uid = c.getString(1);
                 this.idproyecto = c.getString(2);
-                this.usuario=c.getString(3);
 
                 return this;
             } else {

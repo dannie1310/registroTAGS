@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     User user;
     TagModel tag;
+    Proyecto pro;
 
     // Referencias UI.
     private AutoCompleteTextView mUsuarioView;
@@ -57,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         mIniciarSesionButton = (Button) findViewById(R.id.iniciar_sesion_button);
 
         tag = new TagModel(this);
+        pro = new Proyecto(this);
 
         mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
     public void deleteAllTables() {
         user.deleteAll();
         tag.deleteAll();
+        pro.deleteAll();
     }
 
     /**
@@ -180,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             ContentValues values = new ContentValues();
 
-            values.put("metodo", "ConfDATA");
+            values.put("metodo", "paraRegistro");
             values.put("usr", mUsuario);
             values.put("pass", mPassword);
 
@@ -212,9 +215,6 @@ public class LoginActivity extends AppCompatActivity {
                     data.put("nombre", (String) JSON.get("Nombre"));
                     data.put("usr", mUsuario);
                     data.put("pass", mPassword);
-                    data.put("idproyecto", (String) JSON.get("IdProyecto"));
-                    data.put("base_datos", "sca_configuracion");
-                    data.put("descripcion_database", (String) JSON.get("descripcion_database"));
 
                     user.create(data);
 
@@ -224,6 +224,23 @@ public class LoginActivity extends AppCompatActivity {
                             mProgressDialog.setMessage("Actualizando catálogo de tags...");
                         }
                     });
+
+                    try {
+                        final JSONArray proyectos = new JSONArray(JSON.getString("proyectos"));
+                        for (int i = 0; i < proyectos.length(); i++) {
+                            final int finalI = i + 1;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.setMessage("Actualizando catálogo de proyectos... \n Proyectos " + finalI + " de " + proyectos.length());
+                                }
+                            });
+                            System.out.println("q "+proyectos.getJSONObject(i));
+                            pro.create(proyectos.getJSONObject(i));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     return true;
                 }
