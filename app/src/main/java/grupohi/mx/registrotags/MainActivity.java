@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             if(!TagModel.find(UID)) {
-                resp = TagModel.create(UID, "40", getApplicationContext());
+                resp = TagModel.create(UID, Usuario.getIdProyecto(getApplicationContext()), usuario.getNombre(), getApplicationContext());
                 if(resp) {
                     Toast.makeText(getApplicationContext(), "Se guardo correctamente el UID: " + UID, Toast.LENGTH_SHORT).show();
                 }
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_sync) {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("¡ADVERTENCIA!")
-                    .setMessage("Se borrarán los registros de viajes almacenados en este dispositivo. \n ¿Deséas continuar con la sincronización?")
+                    .setMessage("Se borrarán los registros de TAGS almacenados en este dispositivo. \n ¿Deséas continuar con la sincronización?")
                     .setNegativeButton("NO", null)
                     .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                         @Override public void onClick(DialogInterface dialog, int which) {
@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity
             if(!TagModel.isSync(getApplicationContext())){
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("¡ADVERTENCIA!")
-                        .setMessage("Hay viajes aún sin sincronizar, se borrarán los registros de viajes almacenados en este dispositivo,  \n ¿Deséas sincronizar?")
+                        .setMessage("Hay viajes aún sin sincronizar, se borrarán los registros de TAGS almacenados en este dispositivo,  \n ¿Deséas sincronizar?")
                         .setNegativeButton("NO", null)
                         .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                             @Override public void onClick(DialogInterface dialog, int which) {

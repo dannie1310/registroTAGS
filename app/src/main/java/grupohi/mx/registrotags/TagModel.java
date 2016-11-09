@@ -24,7 +24,6 @@ class TagModel {
     private static DBScaSqlite db_sca;
     String uid;
     String idproyecto;
-    String camion;
     String usuario;
 
 
@@ -49,17 +48,16 @@ class TagModel {
 
 
 
-    static boolean create(String UID, String proyecto, Context context) {
+    static boolean create(String UID, String proyecto, String nombre, Context context) {
         ContentValues data = new ContentValues();
 
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
         SQLiteDatabase db = db_sca.getWritableDatabase();
-        data.putNull("idcamion");
 
         data.clear();
         data.put("uid", UID);
-        data.put("idcamion", "null");
         data.put("idproyecto",proyecto);
+        data.put("usuario", nombre);
 
         db = db_sca.getWritableDatabase();
         System.out.println("datos: " + data);
@@ -99,8 +97,8 @@ class TagModel {
                     this.UID = c.getString(c.getColumnIndex("uid"));
                     uid = c.getString(c.getColumnIndex("uid"));
                     idproyecto = c.getString(c.getColumnIndex("idproyecto"));
-                    camion = c.getString(c.getColumnIndex("idcamion"));
-                    System.out.println("SELECT: " + uid + " " + idproyecto + " " + camion);
+                    usuario = c.getString(c.getColumnIndex("usuario"));
+                    System.out.println("SELECT: " + uid + " " + idproyecto + " " +  usuario);
                 }
             }
             return this;
@@ -115,9 +113,8 @@ class TagModel {
         Cursor c = db.rawQuery("SELECT * FROM tag WHERE ID = '" + id + "'", null);
         try {
             if (c != null && c.moveToFirst()) {
-                this.uid = c.getString(0);
+                this.uid = c.getString(1);
                 this.idproyecto = c.getString(2);
-                this.camion=c.getString(1);
                 this.usuario=c.getString(3);
 
                 return this;
@@ -182,10 +179,7 @@ class TagModel {
                     JSONObject json = new JSONObject();
 
                     json.put("uid", c.getString(1));
-                    json.put("idproyecto", c.getString(2));
-                    json.put("idcamion", c.getInt(3));
-                    json.put("Estatus", c.getString(4));
-                    json.put("usuario", c.getString(5));
+                    json.put("id_proyecto", c.getInt(2));
 
                     JSON.put(i + "", json);
                     i++;

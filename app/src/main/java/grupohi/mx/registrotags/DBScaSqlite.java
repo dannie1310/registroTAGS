@@ -12,7 +12,7 @@ public class DBScaSqlite extends SQLiteOpenHelper {
 
     private String[] queries = new String[] {
             "CREATE TABLE user (idusuario INTEGER PRIMARY KEY, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT)",
-            "CREATE TABLE tags (uid TEXT PRIMARY KEY, idcamion INTEGER, idproyecto INTEGER)",
+            "CREATE TABLE tags (ID INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, idproyecto INTEGER, usuario TEXT)",
     };
 
     public DBScaSqlite(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

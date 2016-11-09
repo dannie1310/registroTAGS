@@ -27,7 +27,7 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
         this.context = context;
         this.progressDialog = progressDialog;
         usuario = new Usuario(context);
-       // usuario = usuario.getNombre();
+        usuario = usuario.getUsuario();
     }
 
     @Override
@@ -36,18 +36,19 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             ContentValues values = new ContentValues();
             values.clear();
 
-            values.put("metodo", "captura");
+            values.put("metodo", "capturaAltas");
             values.put("usr", usuario.usr);
             values.put("pass", usuario.pass);
-            values.put("bd", usuario.baseDatos);
-            values.put("idusuario", usuario.getId());
 
-
+            if (TagModel.getJSON(context).length() != 0) {
+                values.put("tags_nuevos", String.valueOf(TagModel.getJSON(context)));
+            }
+            System.out.println(values);
             try {
                 URL url = new URL("http://sca.grupohi.mx/android20160923.php");
                 JSON = HttpConnection.POST(url, values);
+
             } catch (Exception e) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
                 return false;
             }

@@ -18,6 +18,7 @@ class Usuario {
     String nombre;
     String baseDatos;
     String descripcionBaseDatos;
+    String proyecto;
 
     private Context context;
 
@@ -84,7 +85,7 @@ class Usuario {
                 this.nombre = c.getString(c.getColumnIndex("nombre"));
                 this.baseDatos = c.getString(c.getColumnIndex("base_datos"));
                 this.descripcionBaseDatos = c.getString(c.getColumnIndex("descripcion_database"));
-                this.usr = c.getString(c.getColumnIndex("user"));
+                this.usr = c.getString(c.getColumnIndex("usr"));
                 this.pass = c.getString(c.getColumnIndex("pass"));
 
                 return this;
@@ -119,6 +120,22 @@ class Usuario {
                 return c.getString(0);
             }
             else{
+                return null;
+            }
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+    static String getIdProyecto(Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT idproyecto FROM user LIMIT 1", null);
+        try{
+            if (c.moveToFirst()) {
+                return c.getString(c.getColumnIndex("idproyecto"));
+            }
+            else {
                 return null;
             }
         } finally {

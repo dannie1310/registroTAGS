@@ -213,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
                     data.put("usr", mUsuario);
                     data.put("pass", mPassword);
                     data.put("idproyecto", (String) JSON.get("IdProyecto"));
-                    data.put("base_datos", (String) JSON.get("base_datos"));
+                    data.put("base_datos", "sca_configuracion");
                     data.put("descripcion_database", (String) JSON.get("descripcion_database"));
 
                     user.create(data);
@@ -224,52 +224,6 @@ public class LoginActivity extends AppCompatActivity {
                             mProgressDialog.setMessage("Actualizando catálogo de tags...");
                         }
                     });
-
-                    try {
-                        final JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
-                        for (int i = 0; i < camiones.length(); i++) {
-                            final int finalI = i + 1;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressDialog.setMessage("Actualizando catálogo de camiones... \n Camion " + finalI + " de " + camiones.length());
-                                }
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        final JSONArray tags = new JSONArray(JSON.getString("tags"));
-                        for (int i = 0; i < tags.length(); i++) {
-                            final int finalI = i + 1;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
-                                }
-                            });
-                            //tag.registrarTags(tags.getJSONObject(i));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
-                        for (int i = 0; i < tags_disponibles.length(); i++) {
-                            final int finalI = i + 1;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
-                                }
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
                     return true;
                 }
