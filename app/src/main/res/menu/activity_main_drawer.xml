@@ -3,9 +3,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:title="Inicio"
-            android:id="@+id/nav_inicio"
-            android:icon="@drawable/ic_action_home"/>
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_action_home"
+            android:title="Inicio" />
+        <item
+            android:id="@+id/nav_sync"
+            android:icon="@drawable/ic_action_sync"
+            android:title="Sincronizar tags" />
 
     </group>
 

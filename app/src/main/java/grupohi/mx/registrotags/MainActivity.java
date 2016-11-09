@@ -39,7 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private Boolean writeMode;
     private Button actionButton;
@@ -63,9 +64,9 @@ public class MainActivity extends AppCompatActivity{
         usuario = new Usuario(this);
         //usuario = usuario.getUsuario();
         writeMode = true;
-        infoTag = (TextView) findViewById(R.id.textInfoTag);
-        nfcImage = (ImageView) findViewById(R.id.nfc_background);
-        nfcImage.setVisibility(View.GONE);
+
+       // nfcImage = (ImageView) findViewById(R.id.nfc_background);
+        //nfcImage.setVisibility(View.VISIBLE);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         writeTagFilters = new IntentFilter[]{tagDetected};
@@ -109,8 +110,8 @@ public class MainActivity extends AppCompatActivity{
                 }
             });
 
-      //  NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-      //  navigationView.setNavigationItemSelectedListener(this);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onNewIntent(Intent intent) {
         int tipo = 0;
-
+        boolean resp = false;
         String UID="";
         if (nfc_adapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
@@ -155,22 +156,35 @@ public class MainActivity extends AppCompatActivity{
                 if (MifareClassic.class.getName().equals(t)) {
                     nfc = new NFCTag(myTag, this);
                     UID = nfc.idTag(myTag);
-                    tipo = 1;
-                   // TagModel.create(UID,"40", getApplicationContext());
-
-                } else if (MifareUltralight.class.getName().equals(t)) {
+                }
+                if(MifareUltralight.class.getName().equals(t)) {
                     nfcUltra = new NFCUltralight(myTag, this);
                     UID = nfcUltra.byteArrayToHexString(myTag.getId());
-                    //TagModel.create(UID,"40", getApplicationContext());
-                    tipo = 2;
-
                 }
-                System.out.println("UID: "+ UID);
-
             }
+            if(!TagModel.find(UID)) {
+                resp = TagModel.create(UID, "40", getApplicationContext());
+                if(resp) {
+                    Toast.makeText(getApplicationContext(), "Se guardo correctamente el UID: " + UID, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.error_conexion_tag, Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Se encuentra ya guardado", Toast.LENGTH_SHORT).show();
+            }
+
+
         }else if (nfc_adapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             Toast.makeText(getApplicationContext(), "El TAG que intentas utilizar no es compatible", Toast.LENGTH_SHORT).show();
         }
+
+        TagModel n = new TagModel(this);
+        n.selectAll();
+        String x = n.UID;
+        System.out.println("tag: "+x);
+
     }
 
     private void WriteModeOn() {
@@ -200,5 +214,73 @@ public class MainActivity extends AppCompatActivity{
                     .create()
                     .show();
         }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        } else if (id == R.id.nav_sync) {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("¡ADVERTENCIA!")
+                    .setMessage("Se borrarán los registros de viajes almacenados en este dispositivo. \n ¿Deséas continuar con la sincronización?")
+                    .setNegativeButton("NO", null)
+                    .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                        @Override public void onClick(DialogInterface dialog, int which) {
+                            if (Util.isNetworkStatusAvialable(getApplicationContext())) {
+                                if(!TagModel.isSync(getApplicationContext())) {
+                                    progressDialogSync = ProgressDialog.show(MainActivity.this, "Sincronizando datos", "Por favor espere...", true);
+                                    new Sync(getApplicationContext(), progressDialogSync).execute((Void) null);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "No es necesaria la sincronización en este momento", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), R.string.error_internet, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .create()
+                    .show();
+
+
+        } else if (id == R.id.nav_logout) {
+            if(!TagModel.isSync(getApplicationContext())){
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("¡ADVERTENCIA!")
+                        .setMessage("Hay viajes aún sin sincronizar, se borrarán los registros de viajes almacenados en este dispositivo,  \n ¿Deséas sincronizar?")
+                        .setNegativeButton("NO", null)
+                        .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialog, int which) {
+                                if (Util.isNetworkStatusAvialable(getApplicationContext())) {
+                                    progressDialogSync = ProgressDialog.show(MainActivity.this, "Sincronizando datos", "Por favor espere...", true);
+                                    new Sync(getApplicationContext(), progressDialogSync).execute((Void) null);
+
+                                    Intent login_activity = new Intent(getApplicationContext(), LoginActivity.class);
+                                    usuario.destroy();
+                                    startActivity(login_activity);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), R.string.error_internet, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+            else {
+                Intent login_activity = new Intent(getApplicationContext(), LoginActivity.class);
+                usuario.destroy();
+                startActivity(login_activity);
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

@@ -250,7 +250,7 @@ public class LoginActivity extends AppCompatActivity {
                                     mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
                                 }
                             });
-                            tag.registrarTags(tags.getJSONObject(i));
+                            //tag.registrarTags(tags.getJSONObject(i));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
