@@ -29,7 +29,7 @@ class Proyecto {
 
     boolean create(JSONObject data) throws Exception {
 
-        this.data.put("id_proyecto", data.getString("id_proyecto"));
+        this.data.put("id_proyecto", data.getInt("id_proyecto"));
         this.data.put("descripcion", data.getString("descripcion"));
 
         db = db_sca.getWritableDatabase();
@@ -86,6 +86,7 @@ class Proyecto {
             if (c != null && c.moveToFirst()) {
                 data.add("0");
                 data.add(c.getString(c.getColumnIndex("id_proyecto")));
+                System.out.println(c.getString(c.getColumnIndex("id_proyecto")));
                 while (c.moveToNext()) {
                     data.add(c.getString(c.getColumnIndex("id_proyecto")));
                 }

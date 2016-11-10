@@ -47,24 +47,11 @@
         android:id="@+id/button_write"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="78dp"
         android:text="Registrar Tag"
-        android:textStyle="bold"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
-        android:text="ACERQUE EL TAG PARA SER LEÍDO"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault"
-        android:id="@+id/textInfoTag"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:textStyle="normal|bold"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:layout_alignParentRight="true" />
 
     <ImageView
         android:src="@drawable/nfc_back"
@@ -74,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="13dp" />
 
 </RelativeLayout>

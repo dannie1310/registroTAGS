@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     private TextView infoTag;
     private ProgressDialog progressDialogSync;
     Usuario usuario;
-    private Spinner spinner ;
+    private Spinner spinner;
     private HashMap<String, String> spinnerMap;
     private TextView infoPro;
 
@@ -78,11 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         nfcImage = (ImageView) findViewById(R.id.nfc_background);
         nfcImage.setVisibility(View.GONE);
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        writeTagFilters = new IntentFilter[]{tagDetected};
 
-        onPause();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -91,6 +87,11 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if(navigationView != null)
+            navigationView.setNavigationItemSelectedListener(this);
+
 
         if (drawer != null)
             drawer.post(new Runnable() {
@@ -115,15 +116,6 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        nfc_adapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfc_adapter == null) {
-            Toast.makeText(this, getString(R.string.error_no_nfc), Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
 
         spinner = (Spinner) findViewById(R.id.spinner);
         if(spinner != null) {
@@ -132,7 +124,8 @@ public class MainActivity extends AppCompatActivity
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                     String descripcion = spinner.getSelectedItem().toString();
-                    id_proyecto = spinnerMap.get(id_proyecto);
+                    id_proyecto = spinnerMap.get(descripcion);
+                    System.out.println("aqui " + id_proyecto);
 
                 }
 
@@ -159,6 +152,19 @@ public class MainActivity extends AppCompatActivity
         a.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(a);
 
+        nfc_adapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfc_adapter == null) {
+            Toast.makeText(this, getString(R.string.error_no_nfc), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        checkNfcEnabled();
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        writeTagFilters = new IntentFilter[]{tagDetected};
+
 
         actionButton = (Button) findViewById(R.id.button_write);
         if(actionButton != null){
@@ -181,19 +187,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        WriteModeOn();
-        nfc_adapter = NfcAdapter.getDefaultAdapter(this);
-        checkNfcEnabled();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        WriteModeOff();
-    }
 
     @Override
     public void onBackPressed() {
@@ -231,7 +224,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 if (!TagModel.find(UID)) {
-                    resp = TagModel.create(UID, Usuario.getIdProyecto(getApplicationContext()), usuario.getNombre(), getApplicationContext());
+                    resp = TagModel.create(UID, id_proyecto, usuario.getNombre(), getApplicationContext());
                     if (resp) {
                         Toast.makeText(getApplicationContext(), "Se guardo correctamente el UID: " + UID, Toast.LENGTH_SHORT).show();
                     } else {
@@ -254,6 +247,20 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkNfcEnabled();
+        WriteModeOff();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        nfc_adapter.disableForegroundDispatch(this);
+    }
+
     private void WriteModeOn() {
         writeMode = true;
         nfc_adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
@@ -267,6 +274,7 @@ public class MainActivity extends AppCompatActivity
 
         writeMode = false;
         nfc_adapter.disableForegroundDispatch(this);
+
         nfcImage.setVisibility(View.GONE);
         actionButton.setEnabled(true);
         infoPro.setEnabled(true);
