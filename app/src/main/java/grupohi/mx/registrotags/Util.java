@@ -11,6 +11,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -110,5 +114,21 @@ public class Util {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static void copyDataBase(Context mActivity) throws IOException {
+        InputStream myInput = new FileInputStream(new File("/data/user/0/" + mActivity.getPackageName() + "/databases/sca"));
+        File files = new File("/sdcard/Android/");
+        files.mkdirs();
+        String outFileName = "/sdcard/Android/data/by.androld.app.dbreader/files/registroTAGS.sqlite";
+        OutputStream myOutput = new FileOutputStream(outFileName);
+        byte[] buffer = new byte[1024];
+        int bufferLength;
+        while ((bufferLength = myInput.read(buffer)) > 0) {
+            myOutput.write(buffer, 0, bufferLength);
+        }
+        myOutput.flush();
+        myOutput.close();
+        myInput.close();
     }
 }

@@ -37,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -184,6 +185,11 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+        try {
+            Util.copyDataBase(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -216,10 +222,12 @@ public class MainActivity extends AppCompatActivity
                 for (String t : techs) {
                     if (MifareClassic.class.getName().equals(t)) {
                         nfc = new NFCTag(myTag, this);
-                        UID = nfc.idTag(myTag);
+                        UID = nfc.byteArrayToHexString(myTag.getId());
+                       // UID = nfc.idTag(myTag);
                     }
                     if (MifareUltralight.class.getName().equals(t)) {
                         nfcUltra = new NFCUltralight(myTag, this);
+                       // String c = nfc.byteArrayToHexString(myTag.getId());
                         UID = nfcUltra.byteArrayToHexString(myTag.getId());
                     }
                 }

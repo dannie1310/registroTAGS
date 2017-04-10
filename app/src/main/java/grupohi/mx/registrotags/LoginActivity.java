@@ -1,11 +1,15 @@
 package grupohi.mx.registrotags;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -21,6 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URL;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_PHONE_STATE;
 
 /**
  * Pantalla de Login por medio de datos de Intranet.
@@ -50,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_login_activity);
         setContentView(R.layout.activity_login);
-
+        checkPermissions();
         mUsuarioView = (AutoCompleteTextView) findViewById(R.id.usuario);
         mPasswordView = (EditText) findViewById(R.id.password);
 
@@ -64,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Util.isNetworkStatusAvialable(getApplicationContext())) {
+                    checkPermissions();
                     attemptLogin();
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
@@ -112,7 +122,30 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(mainActivity);
     }
 
+    private Boolean checkPermissions() {
+        Boolean permission_fine_location = true;
+        Boolean permission_read_phone_state = true;
+        Boolean permission_read_external = true;
+        Boolean permission_write_external = true;
+        Boolean internet = true;
 
+        if(ContextCompat.checkSelfPermission(LoginActivity.this, READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, 100);
+            permission_read_phone_state =  false;
+        }
+
+        if(ContextCompat.checkSelfPermission(LoginActivity.this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            permission_read_external =  false;
+            permission_write_external = false;
+        }
+
+        if(!Util.isNetworkStatusAvialable(getApplicationContext())) {
+            Toast.makeText(LoginActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
+            internet = false;
+        }
+        return (permission_fine_location && permission_read_phone_state && internet && permission_read_external && permission_write_external);
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
