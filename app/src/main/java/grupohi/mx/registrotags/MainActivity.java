@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
                             tvu.setText(usuario.getNombre());
                         }
                         if (tvv != null) {
-                            tvv.setText("Versión " + String.valueOf(BuildConfig.VERSION_NAME));
+                            tvv.setText(getString(R.string.app_name)+"     "+"Versión " + String.valueOf(BuildConfig.VERSION_NAME));
                         }
                     }
                 }
