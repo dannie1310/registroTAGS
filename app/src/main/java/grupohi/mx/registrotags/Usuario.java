@@ -19,6 +19,7 @@ class Usuario {
     String baseDatos;
     String descripcionBaseDatos;
     String proyecto;
+    String token;
 
     private Context context;
 
@@ -87,6 +88,7 @@ class Usuario {
                 this.descripcionBaseDatos = c.getString(c.getColumnIndex("descripcion_database"));
                 this.usr = c.getString(c.getColumnIndex("usr"));
                 this.pass = c.getString(c.getColumnIndex("pass"));
+                this.token = c.getString(c.getColumnIndex("token"));
 
                 return this;
             } else {

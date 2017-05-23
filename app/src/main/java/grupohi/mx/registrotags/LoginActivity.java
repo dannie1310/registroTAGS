@@ -216,12 +216,11 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             ContentValues values = new ContentValues();
 
-            values.put("metodo", "paraRegistro");
-            values.put("usr", mUsuario);
-            values.put("pass", mPassword);
+            values.put("usuario", mUsuario);
+            values.put("clave", mPassword);
 
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL("http://172.20.73.141/api/authenticate");
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -244,8 +243,9 @@ public class LoginActivity extends AppCompatActivity {
                     Boolean value;
                     ContentValues data = new ContentValues();
 
-                    data.put("idusuario", (String) JSON.get("IdUsuario"));
+                    data.put("idusuario", String.valueOf(JSON.get("IdUsuario")));
                     data.put("nombre", (String) JSON.get("Nombre"));
+                    data.put("token", (String) JSON.get("token"));
                     data.put("usr", mUsuario);
                     data.put("pass", mPassword);
 

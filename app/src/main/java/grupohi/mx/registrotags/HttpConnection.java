@@ -26,15 +26,12 @@ class HttpConnection {
         String response = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
             conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + values.get("token"));
 
             OutputStream os = conn.getOutputStream();
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-            bw.write(Util.getQuery(values));
-            bw.flush();
+            os.write(values.get("tags_nuevos").toString().getBytes("UTF-8"));
+            os.close();
 
             int statusCode = conn.getResponseCode();
             Log.i("Status Code",String.valueOf(statusCode));

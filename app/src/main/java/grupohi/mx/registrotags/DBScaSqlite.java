@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBScaSqlite extends SQLiteOpenHelper {
 
     private String[] queries = new String[] {
-            "CREATE TABLE user (idusuario INTEGER PRIMARY KEY, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT)",
+            "CREATE TABLE user (idusuario INTEGER PRIMARY KEY, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT, token TEXT)",
             "CREATE TABLE tags (ID INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, idproyecto INTEGER)",
             "CREATE TABLE proyectos (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_proyecto INTEGER, descripcion TEXT)",
     };

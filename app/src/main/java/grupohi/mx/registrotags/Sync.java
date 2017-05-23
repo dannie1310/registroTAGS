@@ -36,16 +36,16 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             ContentValues values = new ContentValues();
             values.clear();
 
-            values.put("metodo", "capturaAltas");
-            values.put("usr", usuario.usr);
-            values.put("pass", usuario.pass);
+            /*values.put("metodo", "capturaAltas");
+            values.put("usr", usuario.usr);*/
+            values.put("token", usuario.token);
 
             if (TagModel.getJSON(context).length() != 0) {
                 values.put("tags_nuevos", String.valueOf(TagModel.getJSON(context)));
             }
             System.out.println(values);
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL("http://172.20.73.141/api/tags_nuevos/"+usuario.usr);
                 JSON = HttpConnection.POST(url, values);
 
             } catch (Exception e) {
