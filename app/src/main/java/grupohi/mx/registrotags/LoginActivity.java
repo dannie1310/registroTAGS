@@ -220,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
             values.put("clave", mPassword);
 
             try {
-                URL url = new URL("http://control-acarreos.ccgpp.mx/api/authenticate");
+                URL url = new URL("http://control-acarreos.grupohi.mx/api/authenticate");
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
