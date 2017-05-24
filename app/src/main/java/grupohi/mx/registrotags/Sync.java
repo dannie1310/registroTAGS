@@ -45,7 +45,7 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             }
             System.out.println(values);
             try {
-                URL url = new URL("http://172.20.73.141/api/tags_nuevos/"+usuario.usr);
+                URL url = new URL("http://control-acarreos.ccgpp.mx/api/tags_nuevos/"+usuario.usr);
                 JSON = HttpConnection.POST(url, values);
 
             } catch (Exception e) {
