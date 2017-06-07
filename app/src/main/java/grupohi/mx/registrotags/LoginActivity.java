@@ -206,6 +206,7 @@ public class LoginActivity extends AppCompatActivity {
         private final String mUsuario;
         private final String mPassword;
         private JSONObject JSON;
+        private String token;
 
         UserLoginTask(String email, String password) {
             mUsuario = email;
@@ -220,7 +221,7 @@ public class LoginActivity extends AppCompatActivity {
             values.put("clave", mPassword);
 
             try {
-                URL url = new URL("http://172.20.73.141/api/authenticate");
+                URL url = new URL("http://172.20.73.182/api/authenticate");
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -242,10 +243,10 @@ public class LoginActivity extends AppCompatActivity {
                     });
                     Boolean value;
                     ContentValues data = new ContentValues();
-
+                    token = (String) JSON.get("token");
                     data.put("idusuario", String.valueOf(JSON.get("IdUsuario")));
                     data.put("nombre", (String) JSON.get("Nombre"));
-                    data.put("token", (String) JSON.get("token"));
+                    data.put("token", token );
                     data.put("usr", mUsuario);
                     data.put("pass", mPassword);
 
@@ -259,7 +260,9 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
                     try {
-                        final JSONArray proyectos = new JSONArray(JSON.getString("proyectos"));
+                        URL url = new URL("http://172.20.73.182/api/tags_nuevos");
+                        JSONObject json = HttpConnection.GET(url, token);
+                        final JSONArray proyectos = new JSONArray(json.getString("proyectos"));
                         for (int i = 0; i < proyectos.length(); i++) {
                             final int finalI = i + 1;
                             runOnUiThread(new Runnable() {

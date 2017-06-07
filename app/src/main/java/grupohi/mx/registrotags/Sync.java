@@ -7,9 +7,13 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Creado por JFEsquivel on 19/10/2016.
@@ -20,6 +24,8 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
     private Context context;
     private ProgressDialog progressDialog;
     private Usuario usuario;
+    private int reject = 0;
+    private ArrayList<String> tags = new ArrayList<>();
 
     private JSONObject JSON;
 
@@ -39,19 +45,52 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             /*values.put("metodo", "capturaAltas");
             values.put("usr", usuario.usr);*/
             values.put("token", usuario.token);
-
-            if (TagModel.getJSON(context).length() != 0) {
-                values.put("tags_nuevos", String.valueOf(TagModel.getJSON(context)));
+            JSONArray json = TagModel.getJSON(context);
+            if (json != null) {
+                for (int i = 0; i < json.length(); i++){
+                    try {
+                        JSONObject dato = (JSONObject) json.get(i);
+                        values.put("tag", dato.toString());
+                        URL url = new URL("http://172.20.73.182/api/tags_nuevos");
+                        JSON = HttpConnection.POST(url, values);
+                        try {
+                            if (JSON.has("msj")) {
+                                switch (JSON.get("msj").toString()){
+                                    case "ok":
+                                        tags.add(dato.get("uid").toString());
+                                        break;
+                                    case "true":
+                                        tags.add(dato.get("uid").toString());
+                                        break;
+                                    case "false":
+                                        reject++;
+                                        break;
+                                    case "401":
+                                        try {
+                                            ContentValues login = new ContentValues();
+                                            login.put("usuario", usuario.usr);
+                                            login.put("clave", usuario.pass);
+                                            URL link = new URL("http://172.20.73.182/api/authenticate");
+                                            JSON = Util.JsonHttp(link, values);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            return false;
+                                        }
+                                        break;
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             System.out.println(values);
-            try {
-                URL url = new URL("http://172.20.73.141/api/tags_nuevos/"+usuario.usr);
-                JSON = HttpConnection.POST(url, values);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
             return true;
         }
 
@@ -60,17 +99,15 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
         super.onPostExecute(aBoolean);
         progressDialog.dismiss();
         if(aBoolean) {
-            try {
-                if (JSON.has("error")) {
-                    Toast.makeText(context, (String) JSON.get("error"), Toast.LENGTH_SHORT).show();
-                } else if(JSON.has("msj")) {
-                    TagModel.deleteAll();
-                    Toast.makeText(context, (String) JSON.get("msj"), Toast.LENGTH_LONG).show();
+            if(reject ==  0){
+                for(int i = 0; i< tags.size(); i++){
+                    boolean resp = TagModel.deleteTitle(tags.get(i));
                 }
-            } catch (Exception e) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
             }
+
+            Toast.makeText(context, "Tags Enviados ", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Ocurrio un error al enviar los datos, Intente de nuevo. ", Toast.LENGTH_SHORT).show();
         }
     }
 }

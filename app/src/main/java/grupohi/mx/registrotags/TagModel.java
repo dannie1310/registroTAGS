@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -43,6 +44,12 @@ class TagModel {
         } finally {
             db.close();
         }
+    }
+
+    static boolean deleteTitle(String name)
+    {
+        db = db_sca.getWritableDatabase();
+        return db.delete("tags", "uid" + "= '" + name+"';", null) > 0;
     }
 
 
@@ -163,23 +170,26 @@ class TagModel {
         }
     }
 
-    static JSONObject getJSON(Context context) {
-        JSONObject JSON = new JSONObject();
+    static JSONArray getJSON(Context context) {
+        JSONObject JSON;
+        JSONArray datos = new JSONArray();
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
         SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM tags", null);
         try {
             if(c != null && c.moveToFirst()) {
-                Integer i = 0;
                 do {
                     JSONObject json = new JSONObject();
 
                     json.put("uid", c.getString(1));
                     json.put("id_proyecto", c.getInt(2));
 
-                    JSON.put(i + "", json);
-                    i++;
+                    datos.put(json);
+
                 } while (c.moveToNext());
+            }
+            else{
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +197,7 @@ class TagModel {
             c.close();
             db.close();
         }
-        System.out.println("json: "+JSON);
-        return JSON;
+        System.out.println("json: ");
+        return  datos;
     }
 }
