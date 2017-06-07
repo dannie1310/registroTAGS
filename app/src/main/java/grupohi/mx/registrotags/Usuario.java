@@ -145,5 +145,16 @@ class Usuario {
             db.close();
         }
     }
+
+
+    boolean update(ContentValues values, int id){
+        db = db_sca.getWritableDatabase();
+        try{
+            return db.update("user", values, " idusuario = " + id, null) > -1;
+        } finally {
+            db.close();
+        }
+    }
+
 }
 

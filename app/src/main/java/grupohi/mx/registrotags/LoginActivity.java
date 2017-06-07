@@ -221,7 +221,7 @@ public class LoginActivity extends AppCompatActivity {
             values.put("clave", mPassword);
 
             try {
-                URL url = new URL("http://172.20.73.182/api/authenticate");
+                URL url = new URL("http://172.50.32.104:8080/api/authenticate");
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -260,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
                     try {
-                        URL url = new URL("http://172.20.73.182/api/tags_nuevos");
+                        URL url = new URL("http://172.50.32.104:8080/api/tags_nuevos");
                         JSONObject json = HttpConnection.GET(url, token);
                         final JSONArray proyectos = new JSONArray(json.getString("proyectos"));
                         for (int i = 0; i < proyectos.length(); i++) {

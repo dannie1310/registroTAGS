@@ -26,6 +26,9 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
     private Usuario usuario;
     private int reject = 0;
     private ArrayList<String> tags = new ArrayList<>();
+    private int encontrados = 0;
+    private int guardado = 0;
+    private int numTag = 0;
 
     private JSONObject JSON;
 
@@ -46,21 +49,25 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             values.put("usr", usuario.usr);*/
             values.put("token", usuario.token);
             JSONArray json = TagModel.getJSON(context);
+            numTag = json.length();
+
             if (json != null) {
                 for (int i = 0; i < json.length(); i++){
                     try {
                         JSONObject dato = (JSONObject) json.get(i);
                         values.put("tag", dato.toString());
-                        URL url = new URL("http://172.20.73.182/api/tags_nuevos");
+                        URL url = new URL("http://172.50.32.104:8080/api/tags_nuevos");
                         JSON = HttpConnection.POST(url, values);
                         try {
                             if (JSON.has("msj")) {
                                 switch (JSON.get("msj").toString()){
                                     case "ok":
                                         tags.add(dato.get("uid").toString());
+                                        encontrados++;
                                         break;
                                     case "true":
                                         tags.add(dato.get("uid").toString());
+                                        guardado++;
                                         break;
                                     case "false":
                                         reject++;
@@ -70,13 +77,16 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
                                             ContentValues login = new ContentValues();
                                             login.put("usuario", usuario.usr);
                                             login.put("clave", usuario.pass);
-                                            URL link = new URL("http://172.20.73.182/api/authenticate");
-                                            JSON = Util.JsonHttp(link, values);
+                                            URL link = new URL("http://172.50.32.104:8080/api/authenticate");
+                                            JSON = Util.JsonHttp(link, login);
+                                            ContentValues data = new ContentValues();
+                                            data.put("token", (String) JSON.get("token"));
+                                            usuario.update(data,usuario.getId());
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                             return false;
                                         }
-                                        break;
+                                        return false;
                                 }
                             }
                         } catch (Exception e) {
@@ -105,7 +115,7 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
                 }
             }
 
-            Toast.makeText(context, "Tags Enviados ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Tags Enviados.\nNuevos Registros: "+guardado+" de "+numTag+ ".\nRegistrados previamente "+encontrados+".", Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context, "Ocurrio un error al enviar los datos, Intente de nuevo. ", Toast.LENGTH_SHORT).show();
         }

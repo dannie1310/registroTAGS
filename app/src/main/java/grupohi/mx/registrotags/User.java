@@ -56,15 +56,6 @@ class User {
         }
     }
 
-    boolean update(ContentValues values, int id){
-        db = db_sca.getWritableDatabase();
-        try{
-            return db.update("user", values, " idusuario = " + id, null) > -1;
-        } finally {
-            db.close();
-        }
-    }
-
     String getName() {
         db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT nombre FROM user LIMIT 1", null);
