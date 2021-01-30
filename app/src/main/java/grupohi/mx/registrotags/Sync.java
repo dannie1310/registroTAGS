@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -22,6 +21,9 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
     private Usuario usuario;
 
     private JSONObject JSON;
+
+    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    public String URL_API = "http://192.168.0.249:8080/";
 
     Sync(Context context, ProgressDialog progressDialog) {
         this.context = context;

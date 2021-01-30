@@ -24,10 +24,21 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.CAMERA;
+import grupohi.mx.registrotags.Oauth.ErpClient;
+import grupohi.mx.registrotags.Oauth.Token;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
 
@@ -49,6 +60,17 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog;
     private Button mIniciarSesionButton;
     Intent mainActivity;
+
+    ///Oauth 2.0
+    public String CLIENT_ID = "1";
+    public String SECRET = "u12k5tax8zOQR53eRZdglLG2gpg5EuYsQqxLcOud";
+    public String SECRET_DEV = "M8w73visooB9co9pJFdImbHv90mU8MuMRpR2DIUl";
+    public String URL_API = "http://192.168.0.249:8080/";
+    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    public String ROUTE_CODE = URL_API + "api/movil?response_type=code&redirect_uri=/auth&client_id=" + CLIENT_ID + "&";
+    public String token_resp = "";
+    private GetCode code = null;
+    private JSONObject resp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,13 +203,8 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             mProgressDialog = ProgressDialog.show(LoginActivity.this, "Autenticando", "Por favor espere...", true);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mAuthTask = new UserLoginTask(usuario, password);
-                    mAuthTask.execute((Void) null);
-                }
-            }).run();
+            code = new GetCode(usuario, password);
+            code.execute();
         }
     }
 
@@ -216,12 +233,11 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             ContentValues values = new ContentValues();
 
-            values.put("metodo", "paraRegistro");
-            values.put("usr", mUsuario);
-            values.put("pass", mPassword);
+            values.put("usuario", mUsuario);
+            values.put("clave", mPassword);
 
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL(URL_API + "api/acarreos/tag/catalogo?access_token=" + token_resp);
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -320,9 +336,101 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
-        startActivity(intent);    }
+        startActivity(intent);
+    }
+
+    private class GetCode extends AsyncTask<Void, Void, Boolean> {
+
+        private final String user;
+        private final String pass;
+
+        GetCode(String user, String pass) {
+            this.user = user;
+            this.pass = pass;
+        }
+        protected Boolean doInBackground(Void... urls) {
+            String body = " ";
+
+            try {
+                URL url = new URL(ROUTE_CODE + "usuario=" + user + "&clave=" + pass);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+                String codigoRespuesta = Integer.toString(urlConnection.getResponseCode());
+                if(codigoRespuesta.equals("200")){//Vemos si es 200 OK y leemos el cuerpo del mensaje.
+                    body = readStream(urlConnection.getInputStream());
+                    resp = new JSONObject(body);
+                    String codec = resp.get("code").toString();
+
+                    Retrofit.Builder builder = new Retrofit.Builder()
+                            .baseUrl(URL_API)
+                            .addConverterFactory(GsonConverterFactory.create());
+                    Retrofit retrofit = builder.build();
+
+                    ErpClient client = retrofit.create(ErpClient.class);
+                    Call<Token> getAccessToken =  client.getToken(
+                            CLIENT_ID,
+                            SECRET,
+                            codec,
+                            "authorization_code",
+                            "/auth"
+                    );
+                    getAccessToken.enqueue(new Callback<Token>() {
+                        @Override
+                        public void onResponse(Call<Token> call, Response<Token> response) {
+                            token_resp = response.body().getAccessToken();
+                            mAuthTask = new UserLoginTask(user, pass);
+                            mAuthTask.execute((Void) null);
+//                            Toast.makeText(LoginActivity.this, "Yes" + response.body().getAccessToken(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Token> call, Throwable t) {
+                            Toast.makeText(LoginActivity.this, "Error al obtener Token", Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
+                        }
+                    });
+                    urlConnection.disconnect();
+
+                }else{
+                    return false;
+                }
+
+
+            } catch (Exception e) {
+                e.getStackTrace();//Error diferente a los anteriores.
+            }
+            return true;
+        }
+
+
+        protected void onPostExecute(Boolean result) {
+            if(!result){
+                Toast.makeText(LoginActivity.this, "Error al obtener Token", Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+            }
+        }
+    }
+
+    private static String readStream(InputStream in) throws IOException {
+
+        BufferedReader r = null;
+        r = new BufferedReader(new InputStreamReader(in));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line);
+        }
+        if(r != null){
+            r.close();
+        }
+        in.close();
+        return total.toString();
+    }
 }
 
