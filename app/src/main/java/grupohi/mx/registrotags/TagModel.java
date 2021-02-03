@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -174,8 +172,8 @@ class TagModel {
                 do {
                     JSONObject json = new JSONObject();
 
-                    json.put("uid", c.getString(1));
-                    json.put("id_proyecto", c.getInt(2));
+                    json.put("uid", c.getString(c.getColumnIndex("uid")));
+                    json.put("id_proyecto", c.getInt(c.getColumnIndex("idproyecto")));
 
                     JSON.put(i + "", json);
                     i++;

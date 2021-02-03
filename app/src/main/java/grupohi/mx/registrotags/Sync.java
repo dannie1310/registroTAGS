@@ -23,7 +23,7 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
     private JSONObject JSON;
 
     //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
-    public String URL_API = "http://192.168.0.249:8080/";
+    public String URL_API = "http://192.168.0.183:8080/";
 
     Sync(Context context, ProgressDialog progressDialog) {
         this.context = context;
@@ -38,18 +38,16 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
             ContentValues values = new ContentValues();
             values.clear();
 
-            values.put("metodo", "capturaAltas");
-            values.put("usr", usuario.usr);
-            values.put("pass", usuario.pass);
+            values.put("usuario", usuario.usr);
+            values.put("clave", usuario.pass);
 
             if (TagModel.getJSON(context).length() != 0) {
                 values.put("tags_nuevos", String.valueOf(TagModel.getJSON(context)));
             }
             System.out.println(values);
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
-                JSON = HttpConnection.POST(url, values);
-
+                URL url = new URL(URL_API  + "api/acarreos/tag-global/registrar?access_token=" + usuario.token);
+                JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;

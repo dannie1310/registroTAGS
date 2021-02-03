@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     public String CLIENT_ID = "1";
     public String SECRET = "u12k5tax8zOQR53eRZdglLG2gpg5EuYsQqxLcOud";
     public String SECRET_DEV = "M8w73visooB9co9pJFdImbHv90mU8MuMRpR2DIUl";
-    public String URL_API = "http://192.168.0.249:8080/";
+    public String URL_API = "http://192.168.0.183:8080/";
     //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
     public String ROUTE_CODE = URL_API + "api/movil?response_type=code&redirect_uri=/auth&client_id=" + CLIENT_ID + "&";
     public String token_resp = "";
@@ -237,7 +237,7 @@ public class LoginActivity extends AppCompatActivity {
             values.put("clave", mPassword);
 
             try {
-                URL url = new URL(URL_API + "api/acarreos/tag/catalogo?access_token=" + token_resp);
+                URL url = new URL(URL_API + "api/acarreos/tag-global/catalogo?access_token=" + token_resp);
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -264,6 +264,7 @@ public class LoginActivity extends AppCompatActivity {
                     data.put("nombre", (String) JSON.get("Nombre"));
                     data.put("usr", mUsuario);
                     data.put("pass", mPassword);
+                    data.put("token", token_resp);//token
 
                     user.create(data);
 
