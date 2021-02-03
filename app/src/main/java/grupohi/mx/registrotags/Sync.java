@@ -22,8 +22,8 @@ class Sync extends AsyncTask<Void, Void, Boolean> {
 
     private JSONObject JSON;
 
-    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
-    public String URL_API = "http://192.168.0.183:8080/";
+    public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    //public String URL_API = "http://192.168.0.183:8080/";
 
     Sync(Context context, ProgressDialog progressDialog) {
         this.context = context;
